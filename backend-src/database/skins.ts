@@ -1,4 +1,4 @@
-import { Collection, WithId, Db, ObjectId, InsertOneResult } from 'mongodb'
+import { Collection, WithId, Db, ObjectId, InsertOneResult, DeleteResult } from 'mongodb'
 import { Skin } from '../models/skin.js'
 import { connectToDatabase } from './db.js'
 
@@ -20,4 +20,14 @@ async function insertSkin(skin: Skin): Promise<ObjectId | null> {
   }
 }
 
-export { getAllSkins, insertSkin }
+async function deleteSkin(id: string): Promise<boolean> {
+	try {
+	  const result: DeleteResult = await col.deleteOne({ _id: new ObjectId(id) })
+	  return result.deletedCount === 1
+	} catch (error) {
+	  console.log('Error deleting skin: ', error)
+	  return false
+	}
+  }
+
+export { getAllSkins, insertSkin, deleteSkin }
