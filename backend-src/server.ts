@@ -8,6 +8,8 @@ const port = 1227
 
 // middleware
 // route handlers
+app.use(express.json())
+
 app.use('/', (req: Request, res: Response, next: NextFunction) => {
   console.log(`${req.method}  ${req.url}`, req.body)
   next()

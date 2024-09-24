@@ -1,15 +1,9 @@
-import { MongoClient, Db, Collection, WithId } from 'mongodb'
+import { Collection, WithId, Db } from 'mongodb'
 import { Skin } from '../models/skin.js'
-
-const con: string | undefined = process.env.CONNECTION_STRING
+import { connectToDatabase } from './db.js'
 
 async function getAllSkins(): Promise<WithId<Skin>[]> {
-  if (!con) {
-    console.log('No connection string')
-    throw new Error('No connection string')
-  }
-  const client: MongoClient = await MongoClient.connect(con)
-  const db: Db = await client.db('CSSkinsDB')
+  const db: Db = await connectToDatabase()
   const col: Collection<Skin> = db.collection<Skin>('csskins')
 
   const result: WithId<Skin>[] = await col.find({}).toArray()
