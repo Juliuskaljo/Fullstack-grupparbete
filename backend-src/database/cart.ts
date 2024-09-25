@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection, WithId, DeleteResult, InsertOneResult, ObjectId } from 'mongodb'
+import { MongoClient, Db, Collection, WithId, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from 'mongodb'
 import { Cart } from '../models/carts.js'
 import { connectToDatabase } from './db.js'
 
@@ -32,4 +32,21 @@ async function deleteCart(id: string): Promise<boolean> {
     return false
   }
 }
-export { getAllCart, deleteCart, insertCart }
+
+async function updateCart(
+	id: string, updatedCart: Partial<Cart>
+): Promise<boolean> {
+	try {
+		const result: UpdateResult = await col.updateOne({ _id: new ObjectId(id)}, {
+			$set: updatedCart
+		}) 
+		return result.matchedCount === 1
+	}
+	catch (error) {
+		console.log('Error updating cart', error);
+		return false
+	}
+}
+
+
+export { getAllCart, deleteCart, insertCart, updateCart }

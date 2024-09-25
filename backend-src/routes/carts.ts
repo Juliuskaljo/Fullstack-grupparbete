@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express'
 
 import { Cart } from '../models/carts.js'
-import { getAllCart, insertCart, deleteCart } from '../database/cart.js'
+import { getAllCart, insertCart, deleteCart, updateCart } from '../database/cart.js'
 import { WithId } from 'mongodb'
 
 export const router: Router = express.Router()
@@ -43,4 +43,19 @@ router.delete('/:id', async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).send('An error occurred: ' + error.message)
   }
+})
+
+// PUT
+
+router.put('/:id', async (req: Request, res: Response) => {
+	const cartId = req.params.id
+	const updatedCart: Partial<Cart> = req.body
+	const wasUpdated = await updateCart(cartId, updatedCart)
+
+	if (wasUpdated) {
+		res.status(200).send('Cart updated succesfully')
+	}
+	else {
+		res.status(400).send('Failed to update cart..')
+	}
 })
