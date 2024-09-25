@@ -1,4 +1,12 @@
-import { Collection, WithId, Db, ObjectId, InsertOneResult, DeleteResult } from 'mongodb'
+import {
+  Collection,
+  WithId,
+  Db,
+  ObjectId,
+  InsertOneResult,
+  DeleteResult,
+  UpdateResult,
+} from 'mongodb'
 import { Skin } from '../models/skin.js'
 import { connectToDatabase } from './db.js'
 
@@ -21,13 +29,29 @@ async function insertSkin(skin: Skin): Promise<ObjectId | null> {
 }
 
 async function deleteSkin(id: string): Promise<boolean> {
-	try {
-	  const result: DeleteResult = await col.deleteOne({ _id: new ObjectId(id) })
-	  return result.deletedCount === 1
-	} catch (error) {
-	  console.log('Error deleting skin: ', error)
-	  return false
-	}
+  try {
+    const result: DeleteResult = await col.deleteOne({ _id: new ObjectId(id) })
+    return result.deletedCount === 1
+  } catch (error) {
+    console.log('Error deleting skin: ', error)
+    return false
   }
+}
 
-export { getAllSkins, insertSkin, deleteSkin }
+async function updateSkin(
+  id: string,
+  updatedSkin: Partial<Skin>
+): Promise<boolean> {
+  try {
+    const result: UpdateResult = await col.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedSkin }
+    )
+    return result.matchedCount === 1
+  } catch (error) {
+    console.error('Error updating skin: ', error)
+    return false
+  }
+}
+
+export { getAllSkins, insertSkin, deleteSkin, updateSkin }

@@ -1,10 +1,15 @@
 import express, { Request, Response, Router } from 'express'
 import { Collection } from 'mongodb'
 import { Skin } from '../models/skin.js'
-import { getAllSkins, insertSkin, deleteSkin } from '../database/skins.js'
+import {
+  getAllSkins,
+  insertSkin,
+  deleteSkin,
+  updateSkin,
+} from '../database/skins.js'
 import { WithId } from 'mongodb'
 
-let col: Collection<Skin>;
+let col: Collection<Skin>
 
 export const router: Router = express.Router()
 
@@ -33,16 +38,30 @@ router.post('/', async (req: Request, res: Response) => {
 // DELETEE
 
 router.delete('/:id', async (req: Request, res: Response) => {
-	try {
-	  const skinId = req.params.id
-	  const wasDeleted = await deleteSkin(skinId)
-  
-	  if (wasDeleted) {
-		res.status(200).send('Skin deleted successfully')
-	  } else {
-		res.status(404).send('Skin not found')
-	  }
-	} catch (error: any) {
-	  res.status(500).send('An error occurred: ' + error.message)
-	}
-  })
+  try {
+    const skinId = req.params.id
+    const wasDeleted = await deleteSkin(skinId)
+
+    if (wasDeleted) {
+      res.status(200).send('Skin deleted successfully')
+    } else {
+      res.status(404).send('Skin not found')
+    }
+  } catch (error: any) {
+    res.status(500).send('An error occurred: ' + error.message)
+  }
+})
+
+//PUT
+
+router.put('/:id', async (req: Request, res: Response) => {
+  const skindId = req.params.id
+  const updatedSkin: Partial<Skin> = req.body
+  const wasUpdated = await updateSkin(skindId, updatedSkin)
+
+  if (wasUpdated) {
+    res.status(200).send('Skin updated successfully')
+  } else {
+    res.status(400).send('Failed to update skin')
+  }
+})

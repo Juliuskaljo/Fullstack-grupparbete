@@ -1,7 +1,12 @@
 import express, { Request, Response, Router } from 'express'
 
 import { User } from '../models/users.js'
-import { getAllUser, insertUser, deleteUser } from '../database/users.js'
+import {
+  getAllUser,
+  insertUser,
+  deleteUser,
+  updateUser,
+} from '../database/users.js'
 import { WithId } from 'mongodb'
 
 export const router: Router = express.Router()
@@ -10,7 +15,6 @@ router.get('/', async (req: Request, res: Response<WithId<User>[]>) => {
   const allUser: WithId<User>[] = await getAllUser()
   res.send(allUser)
 })
-
 
 //POST
 
@@ -43,5 +47,18 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     res.status(500).send('An error occurred: ' + error.message)
+  }
+})
+
+//PUT
+
+router.put('/:id', async (req: Request, res: Response) => {
+  const userId = req.params.id
+  const updatedUser: Partial<User> = req.body
+  const wasUpdated = await updateUser(userId, updatedUser)
+  if (wasUpdated) {
+    res.status(200).send('User updated successfully')
+  } else {
+    res.status(400).send('Failed to update user')
   }
 })
