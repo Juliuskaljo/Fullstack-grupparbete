@@ -1,13 +1,35 @@
-import { MongoClient, Db, Collection, WithId } from 'mongodb'
+import { MongoClient, Db, Collection, WithId, ObjectId, InsertOneResult, DeleteResult } from 'mongodb'
 import { User } from '../models/users.js'
 import { connectToDatabase } from './db.js'
 
-async function getAllUser(): Promise<WithId<User>[]> {
+
   const db: Db = await connectToDatabase()
   const col: Collection<User> = db.collection<User>('users')
 
+  async function getAllUser(): Promise<WithId<User>[]> {
   const result: WithId<User>[] = await col.find({}).toArray()
   return result
 }
 
-export { getAllUser }
+async function insertUser(user: User): Promise<ObjectId | null> {
+  try {
+    const result: InsertOneResult<User> = await col.insertOne(user)
+    return result.insertedId
+  } catch (error) {
+    console.log('Error inserting user: ', error)
+    return null
+  }
+}
+
+async function deleteUser(id: string): Promise<boolean> {
+  try{
+    const result: DeleteResult = await col.deleteOne({ _id: new ObjectId(id)})
+    return result.deletedCount === 1
+  } catch (error) {
+    console.log('Error deleting user: ', error)
+    return false
+  }
+}
+
+
+export { getAllUser, insertUser, deleteUser }
