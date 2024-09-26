@@ -6,6 +6,7 @@ import {
   insertSkin,
   deleteSkin,
   updateSkin,
+  getSpecificSkin,
 } from '../database/skins.js'
 import { WithId } from 'mongodb'
 
@@ -17,6 +18,24 @@ export const router: Router = express.Router()
 router.get('/', async (req: Request, res: Response<WithId<Skin>[]>) => {
   const allSkins: WithId<Skin>[] = await getAllSkins()
   res.send(allSkins)
+})
+
+router.get('/search', async (req: Request, res: Response) => {
+  try {
+    const { q } = req.query
+    if (!q || typeof q !== 'string') {
+      return res.status(400).send('Invalid querry parameter')
+    }
+
+    const specificSkin: WithId<Skin>[] = await getSpecificSkin(q)
+    if (specificSkin) {
+      return res.status(200).send(specificSkin)
+    } else {
+      return res.status(400).send('Skin not found')
+    }
+  } catch (error: any) {
+    return res.status(500).send('Server error' + error.message)
+  }
 })
 
 //POST

@@ -6,6 +6,7 @@ import {
   insertUser,
   deleteUser,
   updateUser,
+  getSpecificUser,
 } from '../database/users.js'
 import { WithId } from 'mongodb'
 
@@ -14,6 +15,24 @@ export const router: Router = express.Router()
 router.get('/', async (req: Request, res: Response<WithId<User>[]>) => {
   const allUser: WithId<User>[] = await getAllUser()
   res.send(allUser)
+})
+
+router.get('/search', async (req: Request, res: Response) => {
+  try {
+    const { q } = req.query
+    if (!q || typeof q !== 'string') {
+      return res.status(400).send('Invalid querry parameter')
+    }
+
+    const specificUser: WithId<User>[] = await getSpecificUser(q)
+    if (specificUser) {
+      return res.status(200).send(specificUser)
+    } else {
+      return res.status(400).send('Skin not found')
+    }
+  } catch (error: any) {
+    return res.status(500).send('Server error' + error.message)
+  }
 })
 
 //POST

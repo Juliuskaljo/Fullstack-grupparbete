@@ -19,6 +19,16 @@ async function getAllUser(): Promise<WithId<User>[]> {
   return result
 }
 
+async function getSpecificUser(name: string): Promise<WithId<User>[]> {
+  try {
+    const result: WithId<User>[] = await col.find({ name }).toArray()
+    return result
+  } catch (error: any) {
+    console.log('Error finding specific skin: ' + error.message)
+    return []
+  }
+}
+
 async function insertUser(user: User): Promise<ObjectId | null> {
   try {
     const result: InsertOneResult<User> = await col.insertOne(user)
@@ -55,4 +65,4 @@ async function updateUser(
   }
 }
 
-export { getAllUser, insertUser, deleteUser, updateUser }
+export { getAllUser, insertUser, deleteUser, updateUser, getSpecificUser }

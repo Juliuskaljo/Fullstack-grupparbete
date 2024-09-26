@@ -6,6 +6,7 @@ import {
   InsertOneResult,
   DeleteResult,
   UpdateResult,
+  FindCursor,
 } from 'mongodb'
 import { Skin } from '../models/skin.js'
 import { connectToDatabase } from './db.js'
@@ -16,6 +17,16 @@ const col: Collection<Skin> = db.collection<Skin>('csskins')
 async function getAllSkins(): Promise<WithId<Skin>[]> {
   const result: WithId<Skin>[] = await col.find({}).toArray()
   return result
+}
+
+async function getSpecificSkin(skinName: string): Promise<WithId<Skin>[]> {
+  try {
+    const result: WithId<Skin>[] = await col.find({ skinName }).toArray()
+    return result
+  } catch (error: any) {
+    console.log('Error finding specific skin: ' + error.message)
+    return []
+  }
 }
 
 async function insertSkin(skin: Skin): Promise<ObjectId | null> {
@@ -54,4 +65,4 @@ async function updateSkin(
   }
 }
 
-export { getAllSkins, insertSkin, deleteSkin, updateSkin }
+export { getAllSkins, insertSkin, deleteSkin, updateSkin, getSpecificSkin }
