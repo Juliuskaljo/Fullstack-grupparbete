@@ -1,4 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from 'express'
+import cors from 'cors'
 import { router as skinRouter } from './routes/skins.js'
 import { router as cartRouter } from './routes/carts.js'
 import { router as userRouter } from './routes/users.js'
@@ -8,6 +9,7 @@ const port = 1227
 
 // middleware
 // route handlers
+app.use(cors() )
 app.use(express.json())
 
 app.use('/', (req: Request, res: Response, next: NextFunction) => {
