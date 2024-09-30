@@ -1,5 +1,5 @@
 const button = document.querySelector('.load-skins');
-const ul = document.querySelector('.skins-list');  // Correct class name
+const ul = document.querySelector('.skins-list');  
 
 button.addEventListener('click', async () => {
     try {
@@ -7,7 +7,6 @@ button.addEventListener('click', async () => {
             method: 'GET'
         });
 
-        // Check if response is OK (status 200) and has JSON content-type
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -17,19 +16,53 @@ button.addEventListener('click', async () => {
             throw new Error("Response is not JSON");
         }
 
-        // Parse JSON response
         const data = await res.json();
         console.log(data);
 
-        // Clear previous list items
         ul.innerHTML = '';
 
-        // Iterate over each skin and append it to the list
         data.forEach(skin => {
             const li = document.createElement('li');
-            li.innerText = `${skin.weapon}, ${skin.pattern}, ${skin.float}, ${skin.price}, ${skin.skinName}, ${skin.amountInStock}`;
+        
+            const img = document.createElement('img');
+            img.src = skin.image;  
+            img.alt = `${skin.weapon} skin image`; 
+            img.style.width = '15em';  
+        
+       
+            const skinDetails = document.createElement('div');
+        
+           
+            const weapon = document.createElement('p');
+            weapon.innerText = `Weapon: ${skin.weapon}`;
+        
+            const pattern = document.createElement('p');
+            pattern.innerText = `Pattern: ${skin.pattern}`;
+        
+            const float = document.createElement('p');
+            float.innerText = `Float: ${skin.float}`;
+        
+            const price = document.createElement('p');
+            price.innerText = `Price: ${skin.price}`;
+        
+            const skinName = document.createElement('p');
+            skinName.innerText = `Skin Name: ${skin.skinName}`;
+        
+            const amountInStock = document.createElement('p');
+            amountInStock.innerText = `Amount in Stock: ${skin.amountInStock}`;
+        
+            skinDetails.appendChild(weapon);
+            skinDetails.appendChild(pattern);
+            skinDetails.appendChild(float);
+            skinDetails.appendChild(price);
+            skinDetails.appendChild(skinName);
+            skinDetails.appendChild(amountInStock);
+            li.appendChild(img);
+            li.appendChild(skinDetails);
             ul.appendChild(li);
         });
+        
+        
 
     } catch (error) {
         console.error('Error fetching skins:', error);

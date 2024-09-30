@@ -21,7 +21,7 @@ async function getAllSkins(): Promise<WithId<Skin>[]> {
 
 async function getSpecificSkin(skinName: string): Promise<WithId<Skin>[]> {
   try {
-    const result: WithId<Skin>[] = await col.find({ skinName }).toArray()
+    const result: WithId<Skin>[] = await col.find({ skinName: { $regex: skinName, $options: "i" } }).toArray()
     return result
   } catch (error: any) {
     console.log('Error finding specific skin: ' + error.message)
