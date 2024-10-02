@@ -1,8 +1,14 @@
 import express, { Request, Response, Router } from 'express'
 
 import { Cart } from '../models/carts.js'
-import { getAllCart, insertCart, deleteCart, updateCart } from '../database/cart.js'
+import {
+  getAllCart,
+  insertCart,
+  deleteCart,
+  updateCart,
+} from '../database/cart.js'
 import { WithId } from 'mongodb'
+import { isValidCart } from '../models/validation.js'
 
 export const router: Router = express.Router()
 
@@ -16,6 +22,10 @@ router.get('/', async (req: Request, res: Response<WithId<Cart>[]>) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const cart: Cart = req.body
+    if (!isValidCart(cart)) {
+      res.status(400).send('You entered wrong data format')
+      return
+    }
     const insertedId = await insertCart(cart)
 
     if (insertedId) {
@@ -48,14 +58,13 @@ router.delete('/:id', async (req: Request, res: Response) => {
 // PUT
 
 router.put('/:id', async (req: Request, res: Response) => {
-	const cartId = req.params.id
-	const updatedCart: Partial<Cart> = req.body
-	const wasUpdated = await updateCart(cartId, updatedCart)
+  const cartId = req.params.id
+  const updatedCart: Partial<Cart> = req.body
+  const wasUpdated = await updateCart(cartId, updatedCart)
 
-	if (wasUpdated) {
-		res.status(200).send('Cart updated succesfully')
-	}
-	else {
-		res.status(400).send('Failed to update cart..')
-	}
+  if (wasUpdated) {
+    res.status(200).send('Cart updated succesfully')
+  } else {
+    res.status(400).send('Failed to update cart..')
+  }
 })

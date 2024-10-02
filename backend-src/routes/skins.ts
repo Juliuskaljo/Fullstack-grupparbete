@@ -8,6 +8,7 @@ import {
   updateSkin,
   getSpecificSkin,
 } from '../database/skins.js'
+import { isValidSkin } from '../models/validation.js'
 import { WithId } from 'mongodb'
 
 let col: Collection<Skin>
@@ -42,6 +43,10 @@ router.get('/search', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const skin: Skin = req.body
+    if (!isValidSkin(skin)) {
+      res.status(400).send('You entered wrong data format')
+      return
+    }
     const insertedId = await insertSkin(skin)
 
     if (insertedId) {

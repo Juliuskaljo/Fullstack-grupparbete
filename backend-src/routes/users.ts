@@ -8,6 +8,7 @@ import {
   updateUser,
   getSpecificUser,
 } from '../database/users.js'
+import { isValidUser } from '../models/validation.js'
 import { WithId } from 'mongodb'
 
 export const router: Router = express.Router()
@@ -40,6 +41,10 @@ router.get('/search', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const user: User = req.body
+    if (!isValidUser(user)) {
+      res.status(400).send('You entered wrong data format')
+      return
+    }
     const insertedId = await insertUser(user)
 
     if (insertedId) {
